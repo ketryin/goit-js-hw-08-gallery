@@ -1,4 +1,4 @@
-import gallery from '../gallery-items.js';
+import gallery from './gallery-items.js';
 
 const galleryListEl = document.querySelector(".js-gallery");
 const modal = document.querySelector('.lightbox');
@@ -9,6 +9,8 @@ const overlay = document.querySelector('.lightbox__overlay');
 closeBtnEl.addEventListener('click',onClickCLoseBtn);
 galleryListEl.addEventListener('click', onClickImgOpenModal);
 overlay.addEventListener('click', onOverlayClick);
+modalImgEL.addEventListener('click', onModalImgClick);
+window.addEventListener('keydown', onKeyPress);
 
 const galleryMarkupItem = gallery.reduce(
     (string, item) => string +
@@ -32,20 +34,25 @@ function onOverlayClick(evt) {
 }
 
 function onKeyPress(evt) {
-  const ESC_KEY_CODE = 'Escape';
-  const LEFT_KEY_CODE = 'ArrowLeft';
-  const RIGHT_KEY_CODE = 'ArrowRight';
-  const isEscKey = evt.code === ESC_KEY_CODE;
-  const urlBigImg = modalImgEL.getAttribute("src");
-  const indexImg = galleryUrlBigImg.indexOf(urlBigImg);
-
-  if (isEscKey) {
-    onClickCLoseBtn();
-  } else if (evt.code===LEFT_KEY_CODE) {
-    onLeftKeyPress(indexImg)
-  } else if (evt.code===RIGHT_KEY_CODE) {
-    onRightKeyPress(indexImg)
+  if (!modal.classList.contains('is-open')) {
+    return;
   }
+    const ESC_KEY_CODE = 'Escape';
+    const LEFT_KEY_CODE = 'ArrowLeft';
+    const RIGHT_KEY_CODE = 'ArrowRight';
+    const isEscKey = evt.code === ESC_KEY_CODE;
+    const urlBigImg = modalImgEL.getAttribute("src");
+    const indexImg = galleryUrlBigImg.indexOf(urlBigImg);
+
+    if (isEscKey) {
+      onClickCLoseBtn();
+    } else if (evt.code===LEFT_KEY_CODE) {
+      onLeftKeyPress(indexImg)
+    } else if (evt.code===RIGHT_KEY_CODE) {
+      onRightKeyPress(indexImg)
+    }
+  
+
 }
 
 function onClickCLoseBtn() {
@@ -55,8 +62,6 @@ function onClickCLoseBtn() {
      
 function onClickImgOpenModal(evt) {
   evt.preventDefault();
-
-  window.addEventListener('keydown', onKeyPress);
 
   if (evt.target.nodeName !== 'IMG') {
     return;
@@ -79,4 +84,10 @@ function onRightKeyPress(index) {
     return modalImgEL.setAttribute('src', galleryUrlBigImg[0]);  
   }
   modalImgEL.setAttribute('src', galleryUrlBigImg[index+1]);
+}
+
+function onModalImgClick() {
+  const urlBigImg = modalImgEL.getAttribute("src");
+  const indexImg = galleryUrlBigImg.indexOf(urlBigImg);
+  onRightKeyPress(indexImg);
 }
